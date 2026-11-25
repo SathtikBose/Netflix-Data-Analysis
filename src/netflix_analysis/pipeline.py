@@ -3,6 +3,7 @@
 Usage:
     python -m netflix_analysis.pipeline --stage clean
     python -m netflix_analysis.pipeline --stage preprocess
+    python -m netflix_analysis.pipeline --stage eda
     python -m netflix_analysis.pipeline --stage all --prefer-sample
 """
 
@@ -17,8 +18,15 @@ from netflix_analysis.cleaning import (
     generate_data_quality_report,
     save_cleaned_data,
 )
-from netflix_analysis.config import CLEANED_DATA_PARQUET, setup_logging
+from netflix_analysis.config import (
+    CLEANED_DATA_PARQUET,
+    PROCESSED_DATA_PARQUET,
+    TITLES_BY_COUNTRY_PARQUET,
+    TITLES_BY_GENRE_PARQUET,
+    setup_logging,
+)
 from netflix_analysis.data_loader import load_netflix_data
+from netflix_analysis.eda import run_eda_suite
 from netflix_analysis.preprocessing import (
     PreprocessingResult,
     preprocess_netflix_data,
@@ -28,7 +36,7 @@ from netflix_analysis.preprocessing import (
 logger = setup_logging()
 
 
-def run_clean_stage(prefer_sample: bool = False) -> pd.DataFrame:
+def run_clean_stage(prefer_sample: bool = False) -> tuple[pd.DataFrame, str]:
     """Execute data loading, cleaning, and quality report generation."""
     loaded = load_netflix_data(prefer_sample=prefer_sample)
     cleaning_result = clean_netflix_data(loaded.df)
@@ -40,7 +48,7 @@ def run_clean_stage(prefer_sample: bool = False) -> pd.DataFrame:
         cleaning_result.before.row_count,
         cleaning_result.after.row_count,
     )
-    return cleaning_result.df
+    return cleaning_result.df, loaded.source
 
 
 def run_preprocess_stage(cleaned_df: pd.DataFrame | None = None) -> PreprocessingResult:
@@ -58,6 +66,34 @@ def run_preprocess_stage(cleaned_df: pd.DataFrame | None = None) -> Preprocessin
     save_processed_data(result)
     logger.info("Preprocess stage finished: %d processed rows.", len(result.df))
     return result
+
+
+def run_eda_stage(
+    prep_result: PreprocessingResult | None = None,
+    source: str = "sample",
+) -> None:
+    """Execute EDA chart generation and write ``reports/findings.md``."""
+    if prep_result is None:
+        if not PROCESSED_DATA_PARQUET.is_file():
+            raise FileNotFoundError(
+                f"Processed dataset not found at {PROCESSED_DATA_PARQUET}. "
+                "Run '--stage preprocess' first."
+            )
+        df = pd.read_parquet(PROCESSED_DATA_PARQUET)
+        by_genre = pd.read_parquet(TITLES_BY_GENRE_PARQUET)
+        by_country = pd.read_parquet(TITLES_BY_COUNTRY_PARQUET)
+    else:
+        df = prep_result.df
+        by_genre = prep_result.titles_by_genre
+        by_country = prep_result.titles_by_country
+
+    saved_figs = run_eda_suite(
+        df=df,
+        titles_by_genre=by_genre,
+        titles_by_country=by_country,
+        source=source,
+    )
+    logger.info("EDA stage finished: saved %d figure(s).", len(saved_figs))
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -83,15 +119,17 @@ def main(argv: list[str] | None = None) -> None:
     """CLI entry point for ``python -m netflix_analysis.pipeline``."""
     args = parse_args(argv)
     cleaned_df: pd.DataFrame | None = None
+    prep_result: PreprocessingResult | None = None
+    source = "sample"
 
     if args.stage in ("clean", "all"):
-        cleaned_df = run_clean_stage(prefer_sample=args.prefer_sample)
+        cleaned_df, source = run_clean_stage(prefer_sample=args.prefer_sample)
 
     if args.stage in ("preprocess", "all"):
-        run_preprocess_stage(cleaned_df=cleaned_df)
+        prep_result = run_preprocess_stage(cleaned_df=cleaned_df)
 
     if args.stage in ("eda", "all"):
-        logger.info("Stage 'eda' will be enabled in Phase 4.")
+        run_eda_stage(prep_result=prep_result, source=source)
 
 
 if __name__ == "__main__":
