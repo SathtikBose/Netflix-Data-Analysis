@@ -1,0 +1,25 @@
+# Core data & numerical stack
+pandas==2.2.3
+numpy==2.1.3
+pyarrow==18.1.0
+
+# Visualization
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==5.24.1
+
+# Interactive dashboard
+streamlit==1.40.2
+
+# Data access & environment
+kaggle==1.6.17
+python-dotenv==1.0.1
+
+# Notebooks
+jupyter==1.1.1
+ipykernel==6.29.5
+
+# Testing & code quality
+pytest==8.3.4
+pytest-cov==6.0.0
+ruff==0.8.2
