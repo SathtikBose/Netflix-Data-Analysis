@@ -7,20 +7,91 @@
 
 ---
 
-## 3-Command Quick Start
+## Complete Beginner's Step-by-Step Guide (Zero Experience Needed)
 
-Runs immediately out of the box using the included 300-row sample dataset (no Kaggle key required):
+Follow these steps in order to copy this project, make it your own, install everything, and launch the live demo on `localhost`.
 
+### Requirements Before You Start
+- **Python 3.11 or newer** (recommended: **Python 3.11**)
+  - Download from [python.org/downloads](https://www.python.org/downloads/).
+  - **Windows users**: During installation, make sure you check the box **"Add Python to PATH"** before clicking Install.
+- **Git** (to clone the repository): download from [git-scm.com](https://git-scm.com/downloads) if you don't have it.
+
+---
+
+### Step 1: Clone the GitHub Repository
+Open **PowerShell** (Windows) or **Terminal** (macOS/Linux) and run:
 ```bash
-python -m venv .venv && .venv\Scripts\activate   # macOS/Linux: source .venv/bin/activate
-pip install -r requirements.txt && pip install -e . --no-deps
-streamlit run app/streamlit_app.py
+git clone <your-github-repo-url>
+```
+*(Replace `<your-github-repo-url>` with the repository's HTTPS URL from GitHub's green **Code** button.)*
+
+### Step 2: Open the Folder in File Explorer
+Open the newly downloaded `netflix-data-analysis` folder in **Windows File Explorer** (or **Finder** on macOS).
+
+### Step 3: Turn On Hidden Items
+In **Windows File Explorer**:
+1. Click the **View** tab in the top toolbar.
+2. Select **Show** -> **Hidden items** (turn it **ON**).
+*(On macOS Finder, press `Cmd + Shift + .` to show hidden files.)*
+
+### Step 4: Remove the `.git` Folder (Make the Project Yours)
+1. Inside the project folder, find the hidden **`.git`** folder.
+2. **Delete the `.git` folder**.
+   - This removes the original commit history so the project belongs completely to you.
+   - *(Optional)* If you want to start your own fresh Git history later, run `git init` inside the folder.
+
+### Step 5: Open the Project in Terminal & Create a Virtual Environment
+Open **PowerShell** (or **Terminal**) inside the project folder and create an isolated **virtual environment** (a clean toolbox just for this project):
+
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+*(If Windows says running scripts is disabled, run `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` once and try `.\.venv\Scripts\Activate.ps1` again.)*
+
+**macOS / Linux (Terminal):**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+You will see `(.venv)` at the start of your command line when it is active.
+
+### Step 6: Install All Dependencies
+With `(.venv)` active, run these three commands:
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e . --no-deps
 ```
 
-Want to generate all cleaned tables, PNG charts, and `reports/findings.md` from the CLI? Run:
-```bash
-python -m netflix_analysis.pipeline --stage all
-```
+#### What Dependencies Get Installed (`requirements.txt`)
+- **Data & Math**: `pandas==2.2.3`, `numpy==2.1.3`, `pyarrow==18.1.0`
+- **Charts & Visuals**: `matplotlib==3.9.2`, `seaborn==0.13.2`, `plotly==5.24.1`
+- **Interactive Web Dashboard**: `streamlit==1.40.2`
+- **Dataset Access & Environment**: `kaggle==1.6.17`, `python-dotenv==1.0.1`
+- **Notebooks**: `jupyter==1.1.1`, `ipykernel==6.29.5`
+- **Testing & Code Quality**: `pytest==8.3.4`, `pytest-cov==6.0.0`, `ruff==0.8.2`
+
+### Step 7 (Optional): Use the Full Kaggle Dataset
+The project works immediately using the included **300-row sample dataset** (`data/sample/netflix_titles_sample.csv`).
+To use the full ~8,800-row catalog:
+1. Download `netflix_titles.csv` from [Kaggle (`shivamb/netflix-shows`)](https://www.kaggle.com/datasets/shivamb/netflix-shows).
+2. Unzip it and place `netflix_titles.csv` inside `data/raw/netflix_titles.csv`.
+
+### Step 8: Run the Data Pipeline & Launch the Live Demo on `localhost`
+1. *(Optional)* Run the full cleaning, preprocessing, and chart-generation pipeline:
+   ```bash
+   python -m netflix_analysis.pipeline --stage all
+   ```
+2. **Start the interactive dashboard**:
+   ```bash
+   streamlit run app/streamlit_app.py
+   ```
+3. Open your web browser and go to:
+   **`http://localhost:8501`**
+   *(To stop the server anytime, press `Ctrl + C` in the terminal.)*
 
 ---
 
