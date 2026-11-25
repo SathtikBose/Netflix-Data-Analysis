@@ -11,11 +11,29 @@
 
 Follow these steps in order to copy this project, make it your own, install everything, and launch the live demo on `localhost`.
 
-### Requirements Before You Start
-- **Python 3.11 or newer** (recommended: **Python 3.11**)
-  - Download from [python.org/downloads](https://www.python.org/downloads/).
-  - **Windows users**: During installation, make sure you check the box **"Add Python to PATH"** before clicking Install.
-- **Git** (to clone the repository): download from [git-scm.com](https://git-scm.com/downloads) if you don't have it.
+### System Prerequisites (Install These First)
+
+To run this project **without any errors**, install these two free tools on your computer before starting:
+
+1. **Python 3.11 (Recommended: Python 3.11.9)**
+   - **Why Python 3.11?** Every package in `requirements.txt` (including `pandas`, `numpy`, `pyarrow`, `matplotlib`, and `streamlit`) has pre-built installers for **Python 3.11**. Using Python 3.11 avoids compiler or wheel-build errors on Windows, macOS, and Linux. *(Python 3.12+ may work, but Python 3.11 is tested and guaranteed error-free.)*
+   - Download from: [python.org/downloads/release/python-3119](https://www.python.org/downloads/release/python-3119/) (or [python.org/downloads](https://www.python.org/downloads/)).
+   - **Important (Windows)**: On the first screen of the installer, **check the box `"Add Python to PATH"`** before clicking **Install Now**.
+   - Verify it worked by opening PowerShell/Terminal and typing:
+     ```bash
+     python --version
+     ```
+     You should see `Python 3.11.x`.
+
+2. **Git (Version Control Tool)**
+   - Needed to download (`git clone`) the project from GitHub.
+   - Download from: [git-scm.com/downloads](https://git-scm.com/downloads) (use the default installer options).
+   - Verify it worked by typing:
+     ```bash
+     git --version
+     ```
+
+3. **A Modern Web Browser** (Chrome, Edge, Firefox, or Safari) to view the dashboard at `http://localhost:8501`.
 
 ---
 
